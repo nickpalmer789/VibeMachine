@@ -1,4 +1,5 @@
-import SpotifyPlayer from 'react-spotify-web-playback';
+//import SpotifyPlayer from 'react-spotify-web-playback';
+import VibeMachine from './VibeMachine.js';
 import React from 'react';
 
 class Player extends React.Component {
@@ -27,7 +28,7 @@ class Player extends React.Component {
         if(this.state.loggedIn){ 
             return (
                 <div style={{width: '800px', marginTop: '300px', marginRight: 'auto', marginLeft: 'auto'}}>
-                    <SpotifyPlayer
+                    <VibeMachine
                         token = {this.state.token}
                         uris={['spotify:artist:6HQYnRM4OzToCYPpVBInuU']}
                         name='VibeMachine'
