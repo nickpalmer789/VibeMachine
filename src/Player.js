@@ -83,7 +83,7 @@ class Player extends React.Component {
                 <div style={{width: '800px', marginTop: '300px', marginRight: 'auto', marginLeft: 'auto'}}>
                     <VibeMachine
                         token = {this.state.accessToken}
-                        uris={['spotify:artist:6HQYnRM4OzToCYPpVBInuU']}
+                        uris={['spotify:track:4NtUY5IGzHCaqfZemmAu56']}
                         name='VibeMachine'
                     />
                 </div>

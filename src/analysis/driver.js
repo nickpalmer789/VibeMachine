@@ -16,7 +16,7 @@ export class Driver {
                 break;
             }
         }
-        console.log('de')
+        console.log('de');
         this.start()
     }
 
