@@ -1,14 +1,10 @@
-function createRemixer() {
-
-}
-
 function preprocessTrack(track) {
     const types = ['sections', 'bars', 'beats', 'tatums', 'segments'];
 
     for (let i in types) {
         let type = types[i];
-        for (let j in track.analysis[type]) {
-            let qlist = track.analysis[type];
+        for (let j in track[type]) {
+            let qlist = track[type];
 
             j = parseInt(j);
 
@@ -48,8 +44,8 @@ function preprocessTrack(track) {
 
 function connectQuanta(track, parent, child) {
     let last = 0;
-    let qparents = track.analysis[parent];
-    let qchildren = track.analysis[child];
+    let qparents = track[parent];
+    let qchildren = track[child];
 
     for (let i in qparents) {
         let qparent = qparents[i];
@@ -72,8 +68,8 @@ function connectQuanta(track, parent, child) {
 
 function connectFirstOverlappingSegment(track, quanta_name) {
     let last = 0;
-    let quanta = track.analysis[quanta_name];
-    let segs = track.analysis.segments;
+    let quanta = track[quanta_name];
+    let segs = track.segments;
 
     for (let i = 0; i < quanta.length; i++) {
         let q = quanta[i];
@@ -91,8 +87,8 @@ function connectFirstOverlappingSegment(track, quanta_name) {
 
 function connectAllOverlappingSegments(track, quanta_name) {
     let last = 0;
-    let quanta = track.analysis[quanta_name];
-    let segs = track.analysis.segments;
+    let quanta = track[quanta_name];
+    let segs = track.segments;
 
     for (let i = 0; i < quanta.length; i++) {
         let q = quanta[i];
@@ -117,9 +113,9 @@ function connectAllOverlappingSegments(track, quanta_name) {
 function filterSegments(track) {
     let threshold = .3;
     let fsegs = [];
-    fsegs.push(track.analysis.segments[0]);
-    for (let i = 1; i < track.analysis.segments.length; i++) {
-        let seg = track.analysis.segments[i];
+    fsegs.push(track.segments[0]);
+    for (let i = 1; i < track.segments.length; i++) {
+        let seg = track.segments[i];
         let last = fsegs[fsegs.length - 1];
         if (isSimilar(seg, last) && seg.confidence < threshold) {
             fsegs[fsegs.length -1].duration += seg.duration;
@@ -127,7 +123,7 @@ function filterSegments(track) {
             fsegs.push(seg);
         }
     }
-    track.analysis.fsegments = fsegs;
+    track.fsegments = fsegs;
 }
 
 function isSimilar(seg1, seg2) {
