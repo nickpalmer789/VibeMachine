@@ -1,4 +1,4 @@
-function preprocessTrack(track) {
+export default function preprocessTrack(track) {
     const types = ['sections', 'bars', 'beats', 'tatums', 'segments'];
 
     for (let i in types) {
@@ -40,6 +40,8 @@ function preprocessTrack(track) {
 
 
     filterSegments(track);
+
+    return track
 }
 
 function connectQuanta(track, parent, child) {

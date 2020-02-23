@@ -1,11 +1,18 @@
 import SpotifyPlayer from 'react-spotify-web-playback';
-import preprocessTrack from './analysis/remixer';
+import preprocessTrack from './analysis/preProcess';
+import { config } from './analysis/jukeboxConfig';
+import { calculateEdges } from "./analysis/edgeFind";
+import { Driver } from "./analysis/driver";
 
 class VibeMachine extends SpotifyPlayer {
     constructor(props) {
         super(props);
-        this.getAudioAnalysis("4NtUY5IGzHCaqfZemmAu56", (data) => {
-            console.log(data)
+        this.getAudioAnalysis("4NtUY5IGzHCaqfZemmAu56", (track) => {
+            let preProcess = preprocessTrack(track);
+            let jukeboxData = Object.assign({}, config);
+            calculateEdges(jukeboxData, preProcess);
+            console.log(track);
+            let driver = new Driver(track, this.skipToPosition, jukeboxData);
         });
     }
 
@@ -30,7 +37,7 @@ class VibeMachine extends SpotifyPlayer {
     }
 
     skipToPosition(position) {
-        this.player.seek(position);
+        console.log('Do it')
     }
 
 

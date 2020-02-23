@@ -1,9 +1,23 @@
-const config = {
+export const config = {
     defaultMinRandomBranchChance: 0.18,
     defaultMaxRandomBranchChance: 0.5,
     defaultRandomBranchChanceDelta: 0.018,
     minRandomBranchChanceDelta: 0.000,
     maxRandomBranchChanceDelta: 0.200,
+    maxBranches: 4,
+    maxBranchThreshold: 80,
+    justBackwards: false,
+    justLongBranches: false,
+    addLastEdge: true,
+    computedThreshold: 0,
+    currentThreshold: 0,
+    deletedEdgeCount: 0,
+    removeSequentialBranches: false,
+    lastBranchPoint: 0,
+    allEdges: [],
+    deletedEdges: [],
+    minRandomBranchChance: 0.18,
+    maxRandomBranchChance: 0.5,
+    randomBranchChanceDelta: 0.018,
+    curRandomBranchChance: 0.18,
 };
-
-export default config;
