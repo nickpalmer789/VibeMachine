@@ -8,7 +8,6 @@ export class Driver {
     }
 
     calculate() {
-        this.seekCallback(0);
         this.curBeat = this.track.beats[0];
         for(let i = 0; i < 10000; i++) {
             this.calculateAdvance();
@@ -23,10 +22,11 @@ export class Driver {
 
     // Fuck this function
     start() {
+        this.seekCallback(0);
         let start = new Date().getTime();
         let timer = setInterval(() => {
             let time = new Date().getTime() - start;
-            if (this.queue[0][0]* 1000 > time) {
+            if (this.queue[0][0]* 1000 < time) {
                 start = new Date().getTime() - this.queue[0][1] * 1000;
                 this.seekCallback(this.queue[0][1] * 1000);
                 this.queue.shift();
