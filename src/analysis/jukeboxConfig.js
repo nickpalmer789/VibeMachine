@@ -6,7 +6,7 @@ export const config = {
     maxRandomBranchChanceDelta: 0.200,
     maxBranches: 4,
     maxBranchThreshold: 80,
-    justBackwards: false,
+    justBackwards: true,
     justLongBranches: false,
     addLastEdge: true,
     computedThreshold: 0,

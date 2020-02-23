@@ -17,7 +17,8 @@ class Player extends React.Component {
             refreshToken: "",
             redirectURL: "http://localhost:3000/vibe",
             clientID: "4b01d4848349477e905afb4fd80ed5c5",
-            clientSecret: "a88c379a9f794868bde44f51eec1bfec"
+            clientSecret: "a88c379a9f794868bde44f51eec1bfec",
+            expiresIn: -1
         };
     }
 
@@ -54,7 +55,8 @@ class Player extends React.Component {
                 console.log(response);
                 self.setState({
                     accessToken: response["access_token"], 
-                    refreshToken: response["refresh_token"], 
+                    refreshToken: response["refresh_token"],
+                    expiresIn: response["expires_in"],
                     loggedIn: true
                 });
             }
@@ -84,6 +86,8 @@ class Player extends React.Component {
                     <VibeMachine
                         token = {this.state.accessToken}
                         uris={['spotify:track:4NtUY5IGzHCaqfZemmAu56']}
+                        refresh_token = {this.state.refreshToken}
+                        expires_in = {this.state.expires_in}
                         name='VibeMachine'
                     />
                 </div>
