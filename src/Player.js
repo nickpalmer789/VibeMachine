@@ -29,6 +29,7 @@ class Player extends React.Component {
     checkCookie(cookieName) {
         var self = this;
         var cookieValue = Cookies.get(cookieName);
+
         if(cookieValue != null && cookieValue != "undefined") {
             var cookieArray = cookieValue.split("|");
             console.log(cookieArray);
@@ -54,6 +55,8 @@ class Player extends React.Component {
         var dough = accessToken + "|" + refreshToken + "|" + expiresIn;
 
         Cookies.set(cookieName, dough, {expires: beforeTimeOut});
+
+        Cookies.set(cookieName + "Date", (new Date).getTime());
     }
 
 
