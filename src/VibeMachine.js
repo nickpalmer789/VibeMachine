@@ -19,6 +19,8 @@ class VibeMachine extends React.Component {
             position: 0,
             duration: 1,
         };
+
+        this.driver = null;
     }
 
     componentDidMount() {
@@ -66,7 +68,7 @@ class VibeMachine extends React.Component {
             clearInterval(this.playerCheckInterval);
             // create a new player
             this.player = new window.Spotify.Player({
-                name: "Matt's Spotify Player",
+                name: "Vibe Machine",
                 getOAuthToken: cb => { cb(this.props.token); },
             });
             // set up the player's event handlers
@@ -75,13 +77,14 @@ class VibeMachine extends React.Component {
             // finally, connect!
             this.player.connect();
 
-            this.getAudioAnalysis("4NtUY5IGzHCaqfZemmAu56", (track) => {
+            /*this.getAudioAnalysis("4NtUY5IGzHCaqfZemmAu56", (track) => {
                 let preProcess = preprocessTrack(track);
                 let jukeboxData = Object.assign({}, config);
                 calculateEdges(jukeboxData, preProcess);
                 console.log(track);
                 let driver = new Driver(track, this.skipToPosition, jukeboxData);
-            });
+                this.driver = driver
+            });*/
         }
     }
 
@@ -117,6 +120,7 @@ class VibeMachine extends React.Component {
     onStateChanged(state) {
         // only update if we got a real state
         if (state !== null) {
+            console.log('update')
             const {
                 current_track: currentTrack,
                 position,
@@ -127,6 +131,20 @@ class VibeMachine extends React.Component {
             const artistName = currentTrack.artists
                 .map(artist => artist.name)
                 .join(", ");
+
+            if (trackName !== this.state.trackName) {
+                console.log(trackName)
+                console.log(state.track_window)
+                if (this.driver) clearInterval(this.driver.timer);
+                this.getAudioAnalysis(state.track_window.current_track.id, (track) => {
+                    let preProcess = preprocessTrack(track);
+                    let jukeboxData = Object.assign({}, config);
+                    calculateEdges(jukeboxData, preProcess);
+                    console.log(track);
+                    let driver = new Driver(track, this.skipToPosition, jukeboxData);
+                    this.driver = driver
+                });
+            }
             const playing = !state.paused;
             this.setState({
                 position,

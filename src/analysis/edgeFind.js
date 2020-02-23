@@ -1,5 +1,8 @@
 export function calculateEdges(jukeboxData, track) {
-    if (jukeboxData.currentThreshold == 0) {
+
+    jukeboxData.minLongBranch = track.beats.length / 5;
+
+    if (jukeboxData.currentThreshold === 0) {
         dynamicCalculateNearestNeighbors('beats', track, jukeboxData);
     } else {
         calculateNearestNeighbors('beats', jukeboxData.currentThreshold, jukeboxData, track);

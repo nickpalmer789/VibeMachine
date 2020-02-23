@@ -4,7 +4,7 @@ export class Driver {
         this.jukeboxData = jukeboxData;
         this.queue = [];
         this.seekCallback = seekCallback;
-        this.calculate();
+        this.timer = this.calculate();
     }
 
     calculate() {
@@ -17,7 +17,8 @@ export class Driver {
             }
         }
         console.log('de');
-        this.start()
+        let timer = this.start();
+        return timer;
     }
 
     // Fuck this function
@@ -35,6 +36,7 @@ export class Driver {
                 }
             }
         }, 10)
+        return timer
     }
 
     calculateAdvance() {
