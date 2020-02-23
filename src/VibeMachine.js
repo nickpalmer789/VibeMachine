@@ -24,6 +24,10 @@ class VibeMachine extends SpotifyPlayer {
         xmlHttp.send(null);
     }
 
+    skipToPosition(position) {
+        this.player.seek(position);
+    }
+
 
 }
 
