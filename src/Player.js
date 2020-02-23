@@ -16,9 +16,10 @@ class Player extends React.Component {
             refreshToken: "",
             redirectURL: "http://localhost:3000/vibe",
             clientID: "4b01d4848349477e905afb4fd80ed5c5",
-            clientSecret: "a88c379a9f794868bde44f51eec1bfec",
-            expiresIn: -1
+            clientSecret: "a88c379a9f794868bde44f51eec1bfec"
         };
+
+
     }
 
     componentDidMount() {
@@ -30,31 +31,36 @@ class Player extends React.Component {
         var self = this;
         var cookieValue = Cookies.get(cookieName);
 
-        if(cookieValue != null && cookieValue != "undefined") {
+        if(cookieValue != null && cookieValue !== "undefined") {
             var cookieArray = cookieValue.split("|");
-            console.log(cookieArray);
-            self.setState({
-                accessToken: cookieArray[0], 
-                refreshToken: cookieArray[1],
-                expiresIn: cookieArray[2],
-                loggedIn: true
-            });
+            if (Date.now() - parseFloat(cookieArray[2]) > 1000 * 60 * 30) {
+                this.getTokens()
+            } else {
+                self.setState({
+                    accessToken: cookieArray[0],
+                    refreshToken: cookieArray[1],
+                    lastRefresh: cookieArray[2],
+                    loggedIn: true
+                });
+            }
 
         }
     }
 
     //Set the cookie with the access tokens in it already
-    setAccessCookie(cookieName, accessToken, refreshToken, expiresIn) {
+    setAccessCookie(cookieName, accessToken, refreshToken, lastRefresh) {
         //Remove the old cookie if one exists
         Cookies.remove(cookieName);
 
-        //Create the new cookie
-        var beforeTimeOut = new Date((new Date).getTime() + (expiresIn - 15) * 60 * 1000);
+
+        setTimeout(() => {
+            this.refresh(refreshToken)
+        }, 1000 * 60 * 30);
 
         //This name is terrible, but I found it funny. Hackathons are fun.
-        var dough = accessToken + "|" + refreshToken + "|" + expiresIn;
+        let dough = accessToken + "|" + refreshToken + '|' + lastRefresh;
 
-        Cookies.set(cookieName, dough, {expires: beforeTimeOut});
+        Cookies.set(cookieName, dough);
 
         Cookies.set(cookieName + "Date", (new Date).getTime());
     }
@@ -67,35 +73,57 @@ class Player extends React.Component {
             vars[key] = value;
         });
         return vars;
-    }    
+    }
+
+    refresh(refreshToken) {
+        let endpointUrl = 'https://accounts.spotify/api/token';
+        let self = this;
+
+        let xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = () => {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                let response = JSON.parse(xmlhttp.response);
+                self.setState({accessToken: response['access_token']})
+            }
+        };
+
+        xmlhttp.open("POST", endpointUrl, true);
+
+        xmlhttp.setRequestHeader("Authorization", "Basic " + btoa(this.state.clientID + ":" + this.state.clientSecret));
+        xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        let params = 'grant_type=refresh_token&refresh_token=' + self.state.refreshToken;
+
+        xmlhttp.send(params);
+    }
 
     //Get the access and refresh tokens for the player to use
     getTokens() {
         //This makes me want to cry. Don't do this if you can avoid it!
-        var self = this;
+        let self = this;
 
         //Get the code returned from spotify
-        var auth_code = this.getUrlVars()["code"]
+        let auth_code = this.getUrlVars()["code"];
 
-        var endpointUrl = "https://accounts.spotify.com/api/token";
+        let endpointUrl = "https://accounts.spotify.com/api/token";
 
 
-        var xmlHttp = new XMLHttpRequest();
+        let xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() {
-            if(xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-                var response = JSON.parse(xmlHttp.response);
+            if(xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                let response = JSON.parse(xmlHttp.response);
                 console.log(response);
 
-                self.setAccessCookie("cookievibe", response["access_token"], response["refresh_token"], response["expires_in"]);
+                self.setAccessCookie("cookievibe", response["access_token"], response["refresh_token"]);
 
                 self.setState({
                     accessToken: response["access_token"], 
                     refreshToken: response["refresh_token"],
-                    expiresIn: response["expires_in"],
                     loggedIn: true
                 });
             }
-        }
+        };
 
         xmlHttp.open("POST", endpointUrl, true);
 
