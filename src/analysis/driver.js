@@ -9,17 +9,35 @@ export class Driver {
         console.log(this.keyPoints);
 
         this.timer = this.calculate();
+
+    }
+
+    //Get a random number. Totally not copied from the interwebs
+    getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     calculate() {
+        let currentSongLength = this.getRandomInt(this.jukeboxData.minSongLength, this.jukeboxData.maxSongLength);
+        
+        console.log(currentSongLength);        
+
+        let accumulator = 0;
         this.curBeat = this.track.beats[0];
         for(let i = 0; i < 10000; i++) {
-            this.calculateAdvance();
+            if(accumulator > currentSongLength) {
+                console.log("terminating song");
+                console.log(accumulator);
+                this.calculateAdvance(true);
+            } else {
+                accumulator += this.calculateAdvance(false);
+            }
+
             if (this.curBeat.next === null) {
                 console.log('finished');
                 break;
             }
-        }
+                    }
         console.log('de');
         let timer = this.start();
         return timer;
@@ -69,10 +87,33 @@ export class Driver {
         return keyPoints;
     }
 
-    calculateAdvance() {
+    calculateAdvance(skip) {
         let jumpChance = Math.random();
         //console.log(this.curBeat.start);
         //console.log(this.jukeboxData.curRandomBranchChance);
+        let duration = this.curBeat.duration;
+
+        //The song should end now. Take all forward skips
+        if(skip){
+            let next = this.curBeat.next.neighbors.shift();
+
+            //Check that the next skip exists
+            if(next) {
+                if(this.curBeat.start < next.dest.start) {
+                    this.jukeboxData.lastThreshold = next.distance;
+                    console.log(this.curBeat, next.distance, next.dest);
+                    this.curBeat.next.neighbors.push(next);
+                    this.queue.push([this.curBeat.start, next.dest.start]);
+                    this.curBeat = next.dest;
+                    return duration;
+                }
+            }
+            
+            //Advance normally if there is no skip
+            this.curBeat = this.curBeat.next;
+
+            return duration;
+        }
 
         //Always take the last available backwards skip
         //Minus 1 to look ahead at the next beat
@@ -84,7 +125,7 @@ export class Driver {
             this.queue.push([this.curBeat.start, next.dest.start]);
             this.curBeat = next.dest;
             this.jukeboxData.curRandomBranchChance = this.jukeboxData.minRandomBranchChance;
-            return;
+            return duration;
         }
 
         if (jumpChance < this.jukeboxData.curRandomBranchChance) {
@@ -96,7 +137,7 @@ export class Driver {
                 //Don't skip to the point of no return
                 if(next.which > this.keyPoints[0]) {
                     this.curBeat = this.curBeat.next;
-                    return;
+                    return duration;
                 }
 
                 this.jukeboxData.lastThreshold = next.distance;
@@ -113,5 +154,6 @@ export class Driver {
                 Math.min(this.jukeboxData.curRandomBranchChance + this.jukeboxData.randomBranchChanceDelta,
                     this.jukeboxData.maxRandomBranchChance);
         }
+        return duration;
     }
 }

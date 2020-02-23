@@ -406,7 +406,7 @@ function filterOutBadBranches(type, lastIndex, track) {
             //Don't push edges that are less than 5 seconds long
             //Don't push edges that are greater than 2 minutes
             let edgeDuration = Math.abs(q.start - neighbor.start);
-            if(edgeDuration < 5) {
+            if(edgeDuration < 10) {
                 continue;
             }
 

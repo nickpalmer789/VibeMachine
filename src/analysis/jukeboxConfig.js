@@ -20,4 +20,6 @@ export const config = {
     maxRandomBranchChance: 0.5,
     randomBranchChanceDelta: 0.018,
     curRandomBranchChance: 0.18,
+    minSongLength: 600,
+    maxSongLength: 1200
 };
