@@ -7,6 +7,9 @@ import { Driver } from "./analysis/driver";
 class VibeMachine extends SpotifyPlayer {
     constructor(props) {
         super(props);
+        
+        //TODO make the tokens refresh before they expire
+
         this.getAudioAnalysis("4NtUY5IGzHCaqfZemmAu56", (track) => {
             let preProcess = preprocessTrack(track);
             let jukeboxData = Object.assign({}, config);
