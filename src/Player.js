@@ -29,7 +29,6 @@ class Player extends React.Component {
     checkCookie(cookieName) {
         var self = this;
         var cookieValue = Cookies.get(cookieName);
-        console.log(cookieValue);
         if(cookieValue != null && cookieValue != "undefined") {
             var cookieArray = cookieValue.split("|");
             console.log(cookieArray);

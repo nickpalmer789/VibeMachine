@@ -1,4 +1,6 @@
 export function calculateEdges(jukeboxData, track) {
+    
+    console.log(track.track);
 
     jukeboxData.minLongBranch = track.beats.length / 5;
 
@@ -397,9 +399,26 @@ function filterOutBadBranches(type, lastIndex, track) {
     let quanta = track[type];
     for (let i = 0; i < lastIndex; i++) {
         let q = quanta[i];
-        let newList = [];
+        let newList = []; //Good neighbors
         for (let j = 0; j < q.neighbors.length; j++) {
             let neighbor = q.neighbors[j];
+            
+            //Don't push edges that are less than 5 seconds long
+            //Don't push edges that are greater than 2 minutes
+            let edgeDuration = Math.abs(q.start - neighbor.start);
+            if(edgeDuration < 5) {
+                continue;
+            }
+
+            //Keep 4 beats in 
+            console.log(q.which % track.track.time_signature);
+            console.log(neighbor.dest.which % track.track.time_signature);
+            console.log(neighbor);
+            console.log("==================");
+            if(q.which % track.track.time_signature !== neighbor.dest.which % track.track.time_signature) {
+                continue;
+            }
+
             if (neighbor.dest.which < lastIndex) {
                 newList.push(neighbor);
             } else {
