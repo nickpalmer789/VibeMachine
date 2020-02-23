@@ -1,14 +1,13 @@
 //import SpotifyPlayer from 'react-spotify-web-playback';
 import VibeMachine from './VibeMachine.js';
 import React from 'react';
+import Cookies from 'js-cookie';
 
 class Player extends React.Component {
     
     constructor(props) {
         //Get the props from the parent component
         super(props);
-
-        this.updateStateVariables = this.updateStateVariables.bind(this);
 
         //The local state for this component
         this.state = {
@@ -22,6 +21,43 @@ class Player extends React.Component {
         };
     }
 
+    componentDidMount() {
+        this.checkCookie("cookievibe");
+    }
+
+    //Check for a cookie with the access tokens in it already
+    checkCookie(cookieName) {
+        var self = this;
+        var cookieValue = Cookies.get(cookieName);
+        console.log(cookieValue);
+        if(cookieValue != null && cookieValue != "undefined") {
+            var cookieArray = cookieValue.split("|");
+            console.log(cookieArray);
+            self.setState({
+                accessToken: cookieArray[0], 
+                refreshToken: cookieArray[1],
+                expiresIn: cookieArray[2],
+                loggedIn: true
+            });
+
+        }
+    }
+
+    //Set the cookie with the access tokens in it already
+    setAccessCookie(cookieName, accessToken, refreshToken, expiresIn) {
+        //Remove the old cookie if one exists
+        Cookies.remove(cookieName);
+
+        //Create the new cookie
+        var beforeTimeOut = new Date((new Date).getTime() + (expiresIn - 15) * 60 * 1000);
+
+        //This name is terrible, but I found it funny. Hackathons are fun.
+        var dough = accessToken + "|" + refreshToken + "|" + expiresIn;
+
+        Cookies.set(cookieName, dough, {expires: beforeTimeOut});
+    }
+
+
     //This code was totally stolen. https://html-online.com/articles/get-url-parameters-javascript/
     getUrlVars() {
         var vars = {};
@@ -30,12 +66,6 @@ class Player extends React.Component {
         });
         return vars;
     }    
-
-    //Update the state
-    updateStateVariables(dictToUpdate) {
-        console.log(dictToUpdate);
-        this.setState(dictToUpdate);
-    }
 
     //Get the access and refresh tokens for the player to use
     getTokens() {
@@ -53,6 +83,9 @@ class Player extends React.Component {
             if(xmlHttp.readyState == 4 && xmlHttp.status == 200) {
                 var response = JSON.parse(xmlHttp.response);
                 console.log(response);
+
+                self.setAccessCookie("cookievibe", response["access_token"], response["refresh_token"], response["expires_in"]);
+
                 self.setState({
                     accessToken: response["access_token"], 
                     refreshToken: response["refresh_token"],
