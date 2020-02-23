@@ -2,6 +2,7 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 import Player from './Player.js';
+import Login from './Login.js';
 
 
 import {
@@ -13,7 +14,16 @@ import {
 
 function App() {
     return (
-        <Player />
+        <Router>
+            <Switch>
+                <Route exact path="/">
+                    <Login />
+                </Route>
+                <Route path="/vibe">
+                    <Player />
+                </Route>
+            </Switch>
+        </Router>
     );
 }
 
